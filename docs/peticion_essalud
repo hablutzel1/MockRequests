@@ -1,0 +1,20 @@
+Host: ww4.essalud.gob.pe:7777
+User-Agent: Mozilla/5.0 (Windows; U; Windows NT 5.1; es-ES; rv:1.9.2.12) Gecko/20101026 Firefox/3.6.12 ( .NET CLR 3.5.30729)
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: es-es,es;q=0.8,en-us;q=0.5,en;q=0.3
+Accept-Encoding: gzip,deflate
+Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7
+Keep-Alive: 115
+Proxy-Connection: keep-alive
+Referer: http://ww4.essalud.gob.pe:7777/acredita/index.jsp?td=1
+Cookie: JSESSIONID=0a38017230d7a2809c63a3ce479b9b268cc86319da65.e34SahmNbhaLay0Lc3iKbNaSbhb0
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 88
+
+-----
+
+pg=1&ll=Libreta+Electoral%2FDNI&td=1&nd=08386802&submit=Consultar&captchafield_doc=13280
+
+-----
+
+http://ww4.essalud.gob.pe:7777/acredita/servlet/Ctrlwacre
