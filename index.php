@@ -128,7 +128,7 @@ function valueToString($value) {
 
 }
 
-function parseTextAndComposePerson($hc, $curl_exec ) {
+function parseTextAndComposePerson($hc, $nombreCarrion, $curl_exec) {
     //  identificar y extraer seccion de interes
     $entireString = obtenerTablaQueRodeaOcurrenciaDeCadena($curl_exec, "DATOS PERSONALES");
 
@@ -138,7 +138,6 @@ function parseTextAndComposePerson($hc, $curl_exec ) {
 
     $person = array();
     $person['hc'] = $hc;
-    $person['nombre'] = valueToString($xmlArray['tr'][1]['td'][1]['B']);
     $person['nombre'] = valueToString($xmlArray['tr'][1]['td'][1]['B']);
     $person['fecha_nacimiento'] = valueToString($xmlArray['tr'][2]['td'][1]);
     $person['dni'] = valueToString($xmlArray['tr'][2]['td'][3]);
@@ -150,16 +149,50 @@ function parseTextAndComposePerson($hc, $curl_exec ) {
     $person['direccion'] = valueToString($xmlArray['tr'][7]['td'][1]);
     $person['afiliado_hasta'] = valueToString($xmlArray['tr'][7]['td'][3]['b']);
     $person['centro_afiliacion'] = valueToString($xmlArray['tr'][8]['td'][1]);
+    $person['nombre_hc_carrion'] = $nombreCarrion;
     return $person;
 }
 
 
+global $cabecera;
+$cabecera = 0;
+
+
+function generarCabecera($person) {
+    global $cabecera;
+
+    //  only work if it is touched the first time
+    $row = '';
+    if ($cabecera == 0) {
+        $i = 0;
+        foreach ($person as $key => $data) {
+            $i++;
+            $row .= $key;
+            if ($i < count($person)) {
+                $row .= ",";
+            }
+
+        }
+
+           $row .= "\n";
+        $cabecera = 1;
+    }
+    return $row;
+}
+
+
+global $resultadosFile;
+$resultadosFile = "resultados.csv";
+
 //  crear function para persistir una persona en la base de datos
 function guardarRegistro($person) {
-
-    $myFile = "resultados.csv";
+     global $resultadosFile;
+    $myFile = $resultadosFile;
     $fh = fopen($myFile, 'a') or die("can't open file");
-    $row = '';
+  $cabecera =  generarCabecera($person);
+
+
+    $row = $cabecera;
     $i = 0;
     foreach ($person as $key => $data) {
         $i++;
@@ -198,6 +231,8 @@ $searchArray[] = array('apellidopat' => '');
 
 $level = array_key_exists('level', $_GET) ? $_GET['level'] : 1;
 
+
+
 //if ($level == null) {
 //    $level = 1;
 //}
@@ -233,10 +268,12 @@ if ($level == null || $level == '1') {
         <label>captcha:</label> <input type="text" name="captcha_code"/> <br/>
         <input type="hidden" name="cookie"
                value="<?php echo urlencode($cookie); ?>"/>
+
+        <label>tipo busqueda:</label>dni
+        <input type="radio" name="tipo" value="dni" checked="checked"/> nombre <input
+            type="radio" name="tipo" value="nombre"/> <br/>
+
         <!--
-            <label>tipo busqueda:</label>dni
-            <input type="radio" name="tipo" value="dni" /> nombre <input
-            type="radio" name="tipo" value="nombre" /> <br />
         <label>Nombre 1:</label> <input name="nom1" /> <br />
         <label>Nombre 2:</label> <input name="nom2" /> <br />
 
@@ -286,6 +323,9 @@ if ($level == null || $level == '1') {
 } else if ($level == '3') {
 
 
+
+    unlink($resultadosFile);
+
     /////////////////
 
 
@@ -294,7 +334,7 @@ if ($level == null || $level == '1') {
 
 
 //    $dni = $_POST['document'];
-    $tipo = 'nombre';
+    $tipo = $_POST['tipo'];
 //    $apePaterno = strtoupper($_POST['apepat']);
 //    $apeMaterno = strtoupper($_POST['apemat']);
 //    $nombre1 = strtoupper($_POST['nom1']);
@@ -303,7 +343,7 @@ if ($level == null || $level == '1') {
 
     //  iterar sobre los datos de origen
 
-    if (($handle = fopen("fuentetemp.csv", "r")) !== FALSE) {
+    if (($handle = fopen("fuente_con_dni_muestra.csv", "r")) !== FALSE) {
         while (($data = fgetcsv($handle, null, ",")) !== FALSE) {
 
             $hc = $data[0];
@@ -311,6 +351,9 @@ if ($level == null || $level == '1') {
             $apeMaterno = $data[2];
             $nombre1 = $data[3];
             $nombre2 = $data[4];
+            $nombreHcCarrion = $apePaterno . " " . $apeMaterno . ", " . $nombre1 . " " . $nombre2;
+
+            $dni = $data[5];
 
 
             //  create request model
@@ -352,14 +395,14 @@ if ($level == null || $level == '1') {
 
             if ($notFound != false) {
                 //  asociar los datos de entrada a un registro no existente
-//                echo "no se encontraron registros";
+                //                echo "no se encontraron registros";
 
                 guardarRegistroNoExistente($hc);
 
 
             } else {
 
-//                echo "multiples registros";
+                //                echo "multiples registros";
 
                 //  identificar unico o multiple
                 $multiple = strpos($curl_exec, "Listado de asegurados");
@@ -402,7 +445,7 @@ if ($level == null || $level == '1') {
                         curl_close($ch);
 
                         // get and parse result
-                        $person = parseTextAndComposePerson($hc, $curl_exec);
+                        $person = parseTextAndComposePerson($hc, $nombreHcCarrion, $curl_exec);
                         $persons[] = $person;
 
                         guardarRegistro($person);
@@ -410,11 +453,10 @@ if ($level == null || $level == '1') {
                     }
 
 
-
                 } else {
 
-//                    echo "registro unico";
-                    $person = parseTextAndComposePerson($hc, $curl_exec);
+                    //                    echo "registro unico";
+                    $person = parseTextAndComposePerson($hc, $nombreHcCarrion, $curl_exec);
                     guardarRegistro($person);
 
                 }
@@ -425,8 +467,11 @@ if ($level == null || $level == '1') {
     }
 
     ////////////////////////////////////
+
+
+    echo "Completado, revisar resultados.csv";
 }
 
 
-echo "Completado, revisar resultados.csv";
+
 ?>
