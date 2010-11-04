@@ -31,6 +31,30 @@
   </component>
   <component name="Encoding" useUTFGuessing="true" native2AsciiForPropertiesFiles="false" />
   <component name="IdProvider" IDEtalkID="494D97552F875D0786EFBB1833AE1E9E" />
+  <component name="IntelliTrac.ConfigurationComponent">
+    <option name="connectionSettings">
+      <ConnectionSettings />
+    </option>
+    <option name="defaultValues">
+      <DefaultValues />
+    </option>
+    <option name="sendCodePointerSettings">
+      <SendCodePointerSettings>
+        <option name="noSelectionTemplate">
+          <Template>
+            <option name="content" value="[[BR]]${filename}:${line}[[BR]] " />
+            <option name="name" value="No selection template" />
+          </Template>
+        </option>
+        <option name="selectionTemplate">
+          <Template>
+            <option name="content" value="[[BR]]${filename}:${line}: {{{ ${selection} }}}[[BR]] " />
+            <option name="name" value="Selection template" />
+          </Template>
+        </option>
+      </SendCodePointerSettings>
+    </option>
+  </component>
   <component name="JavadocGenerationManager">
     <option name="OUTPUT_DIRECTORY" />
     <option name="OPTION_SCOPE" value="protected" />
@@ -169,10 +193,17 @@
       </item>
     </group>
   </component>
-  <component name="PhpProjectConfiguration">
+  <component name="PhpProjectConfiguration" xdebug_port="10000">
     <sdk>
-      <PhpSdkConfig version="5.2.9" home="D:\xampp\php" />
+      <PhpSdkConfig version="5.2.9" home="D:\ZendServer\ZendServer\bin" />
     </sdk>
+  </component>
+  <component name="ProjectDictionaryState">
+    <dictionary name="JHABLUTZEL">
+      <words>
+        <w>captcha</w>
+      </words>
+    </dictionary>
   </component>
   <component name="ProjectModuleManager">
     <modules>
@@ -186,7 +217,7 @@
     <option name="mySupportsUserInfoFilter" value="true" />
   </component>
   <component name="VcsDirectoryMappings">
-    <mapping directory="" vcs="" />
+    <mapping directory="" vcs="Git" />
   </component>
   <component name="WebServicesPlugin" addRequiredLibraries="true" />
 </project>
